@@ -11,7 +11,7 @@ public class DBConn {
         if (conn == null) {
             try{
                 String dbDriver = "com.mysql.cj.jdbc.Driver";
-                String dbUrl = "jdbc:mysql://localhost:3306/";
+                String dbUrl = "jdbc:mysql://localhost:3306/vending";
                 String dbUser = "root";
                 String dbPassword = "1234";
 
@@ -39,7 +39,4 @@ public class DBConn {
             conn = null;
         }
     }
-
-
-
 }
