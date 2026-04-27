@@ -124,7 +124,6 @@ public class MemberService {
 
             result = pstmt.executeUpdate();
             pstmt.close();
-
         } catch (Exception e) {
             System.out.println("insert 오류 : " +  e.getMessage());
         }
@@ -133,16 +132,17 @@ public class MemberService {
 
     public int delete(int id) {
         PreparedStatement pstmt = null;
-
+        int  result = 0;
         try {
             String sql = "DELETE FROM member WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
-            return pstmt.executeUpdate();
+            result = pstmt.executeUpdate();
             pstmt.close();
         }catch (Exception e) {
             System.out.println("insert 오류 : "+e.getMessage());
         }
+        return result;
     }
 
     public List<MemberDto> getAll() {
