@@ -21,12 +21,7 @@ public class AdminView {
 
         while(true) {
             MemberDto fresh = memberService.getById(loginUser.getId());
-            if(fresh == null) {
-                loginUser.setIsAdmin(1);
-            } else {
-                loginUser.setIsAdmin(0);
-                return;
-            }
+
             System.out.println("=============================");
             System.out.println("관리자 메뉴");
             System.out.println("=============================");
