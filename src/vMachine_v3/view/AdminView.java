@@ -57,11 +57,11 @@ public class AdminView {
         if (menu == 1) {
             DrinkDto dto = new DrinkDto();
             System.out.println("제품명 : ");
-            System.out.print(sc.nextLine());
+            dto.setName(sc.next());
             System.out.println("가격 : ");
-            System.out.print(sc.nextLine());
+            dto.setPrice(sc.nextInt());
             System.out.println("재고 : ");
-            System.out.print(sc.nextLine());
+            dto.setStock(sc.nextInt());
             int result = drinkService.insert(dto);
             System.out.println(result > 0 ? "추가 성공" : "추가 실패");
         } else if (menu == 2) {
@@ -69,7 +69,7 @@ public class AdminView {
             System.out.println("수정할 ID : ");
             dto.setId(readInt());
             System.out.println("제품명 : ");
-            dto.setName(sc.nextLine());
+            dto.setName(sc.next());
             System.out.println("가격 : ");
             dto.setPrice(sc.nextInt());
             System.out.println("재고 : ");

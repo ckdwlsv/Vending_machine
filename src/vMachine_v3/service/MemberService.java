@@ -11,13 +11,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemberService {
-    Connection conn = new DBConn().getConnection();
 
     public boolean register(MemberDto dto) {
-        boolean result = false;
+        Connection conn = null;
         PreparedStatement pstmt = null;
+        boolean result = false;
 
         try {
+            conn = DBConn.getConnection();
             String sql = "INSERT INTO member(id, user_id, password, name, tel, balance, card_num, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
 
@@ -34,21 +35,22 @@ public class MemberService {
             if (count > 0) {
                 result = true;
             }
-
         } catch (Exception e) {
             System.out.println("insert 오류: " + e.getMessage());
         } finally {
-            try {if (pstmt != null) pstmt.close();} catch (SQLException e) {}
-            try {if (conn != null) conn.close();} catch (SQLException e) {}
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {}
         }
         return result;
     }
 
     public MemberDto login(String userId, String pw) {
+        Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MemberDto dto = new MemberDto();
         try {
+            conn =DBConn.getConnection();
             String sql = "SELECT * FROM member WHERE user_id = ? AND password = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, userId);
@@ -56,6 +58,7 @@ public class MemberService {
             rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                MemberDto dto = new MemberDto();
                 dto.setId(rs.getInt("id"));
                 dto.setUserId(rs.getString("user_id"));
                 dto.setPassword(rs.getString("password"));
@@ -64,6 +67,11 @@ public class MemberService {
             }
         } catch (Exception e) {
             System.out.println("insert 오류: " + e.getMessage());
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            } catch (Exception e) {}
         }
         return null;
     }
@@ -71,13 +79,15 @@ public class MemberService {
     public MemberDto getById(int id) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        MemberDto dto = new MemberDto();
+        Connection conn = null;
         try {
+            conn = DBConn.getConnection();
             String sql = "SELECT * FROM member WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             rs = pstmt.executeQuery();
             while (rs.next()) {
+                MemberDto dto = new MemberDto();
                 dto.setId(rs.getInt("id"));
                 dto.setUserId(rs.getString("user_id"));
                 dto.setName(rs.getString("name"));
@@ -89,15 +99,22 @@ public class MemberService {
                 return dto;
             }
         } catch (Exception e) {
-            System.out.println("insert 오류 : " + e.getMessage());
+        System.out.println("insert 오류 : " + e.getMessage());
+        }finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e){}
         }
-        return null;
+    return null;
     }
 
     public int charge(int memberId, int amount) {
         PreparedStatement pstmt = null;
-
+        ResultSet rs = null;
+        Connection conn = null;
         try {
+            conn = DBConn.getConnection();
             String sql = "UPDATE member SET balance = balance + ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, amount);
@@ -105,6 +122,11 @@ public class MemberService {
             return pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println("insert 오류 : " +  e.getMessage());
+        }finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e){}
         }
         return 0;
     }
@@ -112,8 +134,10 @@ public class MemberService {
     public int update(MemberDto dto) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        Connection conn = null;
         int result = 0;
         try {
+            conn = DBConn.getConnection();
             String sql = "UPDATE member SET user_id=?, name=?, password=?, tel=?, card_num=? WHERE id=?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, dto.getUserId());
@@ -121,19 +145,27 @@ public class MemberService {
             pstmt.setString(3, dto.getPassword());
             pstmt.setString(4, dto.getTel());
             pstmt.setString(5, dto.getCardNum());
+            pstmt.setInt(6, dto.getId());
 
             result = pstmt.executeUpdate();
-            pstmt.close();
         } catch (Exception e) {
             System.out.println("insert 오류 : " +  e.getMessage());
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (rs != null) rs.close();
+            } catch (SQLException e) {}
         }
         return result;
     }
 
     public int delete(int id) {
         PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
         int  result = 0;
         try {
+            conn = DBConn.getConnection();
             String sql = "DELETE FROM member WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
@@ -141,15 +173,22 @@ public class MemberService {
             pstmt.close();
         }catch (Exception e) {
             System.out.println("insert 오류 : "+e.getMessage());
+        }finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e){}
         }
         return result;
     }
 
     public List<MemberDto> getAll() {
         List<MemberDto> list = new ArrayList<>();
+        Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            conn = DBConn.getConnection();
             String sql = "SELECT * FROM member";
             pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -165,11 +204,13 @@ public class MemberService {
                 dto.setIsAdmin(rs.getInt("is_admin"));
                 list.add(dto);
             }
-            //System.out.println(list);
-            pstmt.close();
-            conn.close();
         }catch(Exception e) {
-            System.out.println("Get All Error: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e) {}
         }
         return list;
     }
