@@ -79,19 +79,19 @@ public class MemberView {
         }
         if (loginUser.getIsAdmin() == 1) {
             adminView.start(loginUser);
-            return;
         } else {
             userMenu(loginUser);
+            return;
         }
     }
 
     private void userMenu(MemberDto loginUser) {
         while (true) {
             MemberDto fresh = memberService.getById(loginUser.getId());
-            if (fresh != null) {
-                loginUser = fresh;
+            if (fresh == null) {
                 return;
             }
+            loginUser = fresh;
 
             System.out.println("============================================");
             System.out.println(" 안녕하세요, ["+loginUser.getName()+"]님! 잔액 : ["+loginUser.getBalance()+"]");
