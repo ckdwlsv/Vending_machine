@@ -11,7 +11,7 @@ public class DrinkView {
         System.out.println("---------------------------------");
 
         for (DrinkDto dto : list) {
-            String text = dto.getId() + "   " + dto.getName() + "      "+ dot.getPrice()+"원     "+dto.getStock()+"개";
+            String text = dto.getId() + "   " + dto.getName() + "      "+ dto.getPrice()+"원     "+dto.getStock()+"개";
             if (dto.getStock() == 0) {
                 text = text + " (품절)";
             }
