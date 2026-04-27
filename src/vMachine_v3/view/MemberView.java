@@ -73,22 +73,24 @@ public class MemberView {
         String pw  = scanner.nextLine();
 
         MemberDto loginUser = memberService.login(userId, pw);
-        if (loginUser != null) {
+        if (loginUser == null) {
             System.out.println("로그인 실패!");
             return;
         }
         if (loginUser.getIsAdmin() == 1) {
-            adminView.start();
+            adminView.start(loginUser);
             return;
+        } else {
+            userMenu(loginUser);
         }
-        userMenu(loginUser);
     }
 
     private void userMenu(MemberDto loginUser) {
         while (true) {
             MemberDto fresh = memberService.getById(loginUser.getId());
-            if (fresh == null) {
+            if (fresh != null) {
                 loginUser = fresh;
+                return;
             }
 
             System.out.println("============================================");

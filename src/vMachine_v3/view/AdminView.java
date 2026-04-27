@@ -17,8 +17,16 @@ public class AdminView {
     private final SalesService salesService = new SalesService();
     private final DrinkView drinkView = new DrinkView();
 
-    public void start() {
+    public void start(MemberDto loginUser) {
+
         while(true) {
+            MemberDto fresh = memberService.getById(loginUser.getId());
+            if(fresh == null) {
+                loginUser.setIsAdmin(1);
+            } else {
+                loginUser.setIsAdmin(0);
+                return;
+            }
             System.out.println("=============================");
             System.out.println("관리자 메뉴");
             System.out.println("=============================");
