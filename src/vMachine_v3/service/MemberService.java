@@ -5,14 +5,16 @@ import vMachine_v3.dto.MemberDto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MemberService {
+    Connection conn = DBConn.getConnection();
 
     public boolean register(MemberDto dto) {
         boolean result = false;
-        Connection conn = DBConn.getConnection();
         PreparedStatement pstmt = null;
 
         try {
@@ -32,7 +34,6 @@ public class MemberService {
             if (count > 0) {
                 result = true;
             }
-            pstmt.close();
 
         } catch (Exception e) {
             System.out.println("insert 오류: " + e.getMessage());
@@ -44,6 +45,26 @@ public class MemberService {
     }
 
     public MemberDto login(String userId, String pw) {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT * FROM member WHERE user_id = ? AND password = ?";
+            pstmt = conn.prepareCall(sql);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, pw);
+            rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                MemberDto dto = new MemberDto();
+                dto.setId(rs.getInt("id"));
+                dto.setUserId(rs.getString("user_id"));
+                dto.setPassword(rs.getString("password"));
+                dto.setIsAdmin(rs.getInt("is_admin"));
+                return dto;
+            }
+        } catch (Exception e) {
+            System.out.println("insert 오류: " + e.getMessage());
+        }
         return null;
     }
 
@@ -64,6 +85,31 @@ public class MemberService {
     }
 
     public List<MemberDto> getAll() {
-        return List.of();
+        List<MemberDto> list = new ArrayList<>();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            String sql = "SELECT * FROM member";
+            pstmt = conn.prepareStatement(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                MemberDto dto = new MemberDto();
+                dto.setId(rs.getInt("id"));
+                dto.setUserId(rs.getString("user_id"));
+                dto.setPassword(rs.getString("password"));
+                dto.setName(rs.getString("name"));
+                dto.setTel(rs.getString("tel"));
+                dto.setBalance(rs.getInt("balance"));
+                dto.setCardNum(rs.getString("card_num"));
+                dto.setIsAdmin(rs.getInt("is_admin"));
+                list.add(dto);
+            }
+            //System.out.println(list);
+            pstmt.close();
+            conn.close();
+        }catch(Exception e) {
+            System.out.println("Get All Error: " + e.getMessage());
+        }
+        return list;
     }
 }
