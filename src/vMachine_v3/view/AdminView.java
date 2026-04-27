@@ -3,20 +3,19 @@ package vMachine_v3.view;
 import vMachine_v3.dto.DrinkDto;
 import vMachine_v3.dto.MemberDto;
 import vMachine_v3.dto.SalesDto;
+import vMachine_v3.service.DrinkService;
+import vMachine_v3.service.MemberService;
+import vMachine_v3.service.SalesService;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class AdminView {
-    private final Scanner sc;
+    private final Scanner sc =  new Scanner(System.in);
     private final DrinkService drinkService = new DrinkService();
     private final MemberService memberService = new MemberService();
     private final SalesService salesService = new SalesService();
     private final DrinkView drinkView = new DrinkView();
-
-    public AdminView(Scanner sc) {
-        this.sc = sc;
-    }
 
     public void start() {
         while(true) {

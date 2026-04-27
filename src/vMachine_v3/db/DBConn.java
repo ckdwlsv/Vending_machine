@@ -29,7 +29,7 @@ public class DBConn {
         return conn;
     }
 
-    public static void close() {
+    public static void clase() {
         if (conn != null) {
             try {
                 conn.close();
