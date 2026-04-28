@@ -42,7 +42,76 @@ public class DrinkService {
     }
 
     public int sell(int memberId, int menuId) {
-        return memberId;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        Connection conn = null;
+        try {
+            //-1. 메뉴존재 확인 여부
+            conn = DBConn.getConnection();
+            String sql = "SELECT * FROM vending_menu WHERE id=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, menuId);
+            rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return -1;
+            }
+            int price = rs.getInt("price");
+            int stock = rs.getInt("stock");
+            if (stock <= 0) {
+                return -2;
+            }
+
+            rs.close();
+            pstmt.close();
+
+            //회원조회
+            sql = "SELECT * FROM member WHERE id=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memberId);
+            rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                return -4;
+            }
+            int balance = rs.getInt("balance");
+            if (balance < price) {
+                return -3;
+            }
+            rs.close();
+            pstmt.close();
+
+            //계산
+            //3.잔액차감
+            sql = "UPDATE member SET balance= balance-? WHERE id=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, price);
+            pstmt.setInt(2, memberId);
+            pstmt.executeUpdate();
+            pstmt.close();
+            //4. 재고 감소
+            sql = "UPDATE vending_menu SET stock = stock -1 WHERE id=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, menuId);
+            pstmt.executeUpdate();
+            pstmt.close();
+            //판매 기록 저장
+            sql = "INSERT INTO sales(member_id, menu_id, price) VALUES (?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, memberId);
+            pstmt.setInt(2, menuId);
+            pstmt.setInt(3, price);
+            pstmt.executeUpdate();
+            return 1;
+        }catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (rs != null) rs.close();
+            }catch (Exception e) {
+                e.getMessage();
+            }
+        }
     }
 
     public int insert(DrinkDto dto) {
