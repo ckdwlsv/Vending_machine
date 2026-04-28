@@ -45,10 +45,63 @@ public class SalesService {
     }
 
     public List<SalesDto> getSummaryByMenu() {
-        return List.of();
+        List<SalesDto> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            conn = DBConn.getConnection();
+            String sql = "select v.name AS menu_name, count(*) AS totalQuantity, sum(s.price) AS totalAmount from sales s Join vending_menu v ON s.menu_id = v.id group by s.menu_id";
+            pstmt = conn.prepareCall(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                SalesDto dto = new SalesDto();
+                dto.setMenuName(rs.getString("menu_name"));
+                dto.setTotalQuantity(rs.getInt("totalQuantity"));
+                dto.setTotalAmount(rs.getInt("totalAmount"));
+                list.add(dto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return list;
     }
 
     public List<SalesDto> getSummaryByMember() {
-        return null;
+        List<SalesDto> list = new ArrayList<>();
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try{
+            conn = DBConn.getConnection();
+            String sql = "SELECT m.user_id as userid, m.name as memberName, coalesce(sum(s.price),0) as totalAmount, m.balance as balance FROM member m left join sales s on m.id = s.member_id group by m.id, m.user_id, m.name, m.user_id, m.name, m.balance order by m.id";
+            pstmt = conn.prepareCall(sql);
+            rs = pstmt.executeQuery();
+            while (rs.next()) {
+                SalesDto dto = new SalesDto();
+                dto.setUserId(rs.getString("userid"));
+                dto.setMemberName(rs.getString("memberName"));
+                dto.setTotalAmount(rs.getInt("totalAmount"));
+                dto.setBalance(rs.getInt("balance"));
+                list.add(dto);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                if (rs != null) rs.close();
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return list;
     }
 }
