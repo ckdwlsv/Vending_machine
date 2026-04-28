@@ -167,9 +167,9 @@ public class AdminView {
             System.out.println("제품명      판매수량    판매금액");
             System.out.println("-----------------------------");
             for (SalesDto dto : list) {
-                System.out.println(dto.getMenuName()+" "+dto.getTotalQuantity()+"개 "+dto.getTotaAmount()+"원");
+                System.out.println(dto.getMenuName()+" "+dto.getTotalQuantity()+"개 "+dto.getTotalAmount()+"원");
                 totalQty += dto.getTotalQuantity();
-                totalAmount += dto.getTotaAmount();
+                totalAmount += dto.getTotalAmount();
             }
             System.out.println("-----------------------------");
             System.out.println("합계 : "+totalQty+"개 "+totalAmount+"원");
@@ -178,7 +178,7 @@ public class AdminView {
             System.out.println("아이디    회원명    구매금액    충전잔액");
             System.out.println("-----------------------------------");
             for (SalesDto dto : list) {
-                System.out.println(dto.getUserId()+" "+dto.getMemberName()+" "+dto.getTotaAmount()+"원 "+dto.getBalance()+"원");
+                System.out.println(dto.getUserId()+" "+dto.getMemberName()+" "+dto.getTotalAmount()+"원 "+dto.getBalance()+"원");
             }
         } else {
             System.out.println("잘못된 메뉴입니다.");
