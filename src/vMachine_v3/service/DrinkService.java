@@ -20,7 +20,7 @@ public class DrinkService {
         try {
             conn = DBConn.getConnection();
             String sql = "SELECT * FROM vending_menu";
-            pstmt = conn.prepareCall(sql);
+            pstmt = conn.prepareStatement(sql);
             rs = pstmt.executeQuery();
             while (rs.next()) {
                 DrinkDto dto = new DrinkDto();
@@ -52,13 +52,13 @@ public class DrinkService {
         try {
             conn = DBConn.getConnection();
             String sql = "INSERT INTO vending_menu(name, price, stock) VALUES (?, ?, ?)";
-            pstmt = conn.prepareCall(sql);
+            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, dto.getName());
             pstmt.setInt(2, dto.getPrice());
             pstmt.setInt(3, dto.getStock());
             result = pstmt.executeUpdate();
-            } catch (Exception e){
-            System.out.println(" "+e.getMessage());
+        } catch (SQLException e){
+            e.printStackTrace();
         }finally {
             try {
                 if (pstmt != null) pstmt.close();
@@ -68,10 +68,51 @@ public class DrinkService {
     }
 
     public int update(DrinkDto dto) {
-        return 0;
+        PreparedStatement pstmt = null;
+        int result = 0;
+        Connection conn = null;
+        ResultSet rs = null;
+        try {
+            conn = DBConn.getConnection();
+            String sql= "UPDATE vending_menu SET name=?, price=?, stock=? WHERE id=?";
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, dto.getName());
+            pstmt.setInt(2, dto.getPrice());
+            pstmt.setInt(3, dto.getStock());
+            pstmt.setInt(4, dto.getId());
+            result = pstmt.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (rs != null) rs.close();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 
     public int delete(int id) {
-        return 0;
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        int result = 0;
+        try {
+            conn = DBConn.getConnection();
+            String sql = "DELETE FROM vending_menu WHERE id = ?";
+            pstmt= conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            result = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+            }catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
     }
 }
