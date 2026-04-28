@@ -13,7 +13,7 @@ public class SalesDto {
     private String userId;
     private String memberName;
     private int totalQuantity;
-    private int totaAmount;
+    private int totalAmount;
     private int balance;
 
     public int getId() {
@@ -88,12 +88,12 @@ public class SalesDto {
         this.totalQuantity = totalQuantity;
     }
 
-    public int getTotaAmount() {
-        return totaAmount;
+    public int getTotalAmount() {
+        return totalAmount;
     }
 
-    public void setTotaAmount(int totaAmount) {
-        this.totaAmount = totaAmount;
+    public void setTotalAmount(int totalAmount) {
+        this.totalAmount = totalAmount;
     }
 
     public int getBalance() {
