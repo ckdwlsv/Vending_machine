@@ -21,7 +21,6 @@ public class MemberService {
             conn = DBConn.getConnection();
             String sql = "INSERT INTO member(id, user_id, password, name, tel, balance, card_num, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
-
             pstmt.setInt(1, dto.getId());
             pstmt.setString(2, dto.getUserId());
             pstmt.setString(3, dto.getPassword());
@@ -30,17 +29,16 @@ public class MemberService {
             pstmt.setInt(6, dto.getBalance());
             pstmt.setString(7,dto.getCardNum());
             pstmt.setInt(8, dto.getIsAdmin());
-
             int count = pstmt.executeUpdate();
-            if (count > 0) {
-                result = true;
-            }
+            result = count > 0 ? true : false;
         } catch (Exception e) {
             System.out.println("insert 오류: " + e.getMessage());
         } finally {
             try {
                 if (pstmt != null) pstmt.close();
-            } catch (SQLException e) {}
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         return result;
     }
@@ -146,7 +144,6 @@ public class MemberService {
             pstmt.setString(4, dto.getTel());
             pstmt.setString(5, dto.getCardNum());
             pstmt.setInt(6, dto.getId());
-
             result = pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println("insert 오류 : " +  e.getMessage());
@@ -154,7 +151,7 @@ public class MemberService {
             try {
                 if (pstmt != null) pstmt.close();
                 if (rs != null) rs.close();
-            } catch (SQLException e) {}
+            } catch (Exception e) {}
         }
         return result;
     }
@@ -170,14 +167,15 @@ public class MemberService {
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, id);
             result = pstmt.executeUpdate();
-            pstmt.close();
         }catch (Exception e) {
             System.out.println("insert 오류 : "+e.getMessage());
         }finally {
             try {
                 if (rs != null) rs.close();
                 if (pstmt != null) pstmt.close();
-            }catch (Exception e){}
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
         return result;
     }
