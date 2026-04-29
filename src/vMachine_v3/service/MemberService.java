@@ -47,6 +47,7 @@ public class MemberService {
         Connection conn = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
+        MemberDto dto = new MemberDto();
         try {
             conn =DBConn.getConnection();
             String sql = "SELECT * FROM member WHERE user_id = ? AND password = ?";
@@ -54,14 +55,11 @@ public class MemberService {
             pstmt.setString(1, userId);
             pstmt.setString(2, pw);
             rs = pstmt.executeQuery();
-
             if (rs.next()) {
-                MemberDto dto = new MemberDto();
                 dto.setId(rs.getInt("id"));
                 dto.setUserId(rs.getString("user_id"));
                 dto.setPassword(rs.getString("password"));
                 dto.setIsAdmin(rs.getInt("is_admin"));
-                return dto;
             }
         } catch (Exception e) {
             System.out.println("insert 오류: " + e.getMessage());
@@ -71,13 +69,14 @@ public class MemberService {
                 if (pstmt != null) pstmt.close();
             } catch (Exception e) {}
         }
-        return null;
+        return dto;
     }
 
     public MemberDto getById(int id) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection conn = null;
+        MemberDto dto = new MemberDto();
         try {
             conn = DBConn.getConnection();
             String sql = "SELECT * FROM member WHERE id = ?";
@@ -85,7 +84,6 @@ public class MemberService {
             pstmt.setInt(1, id);
             rs = pstmt.executeQuery();
             while (rs.next()) {
-                MemberDto dto = new MemberDto();
                 dto.setId(rs.getInt("id"));
                 dto.setUserId(rs.getString("user_id"));
                 dto.setName(rs.getString("name"));
@@ -94,7 +92,6 @@ public class MemberService {
                 dto.setCardNum(rs.getString("card_num"));
                 dto.setBalance(rs.getInt("balance"));
                 dto.setCardNum(rs.getString("card_num"));
-                return dto;
             }
         } catch (Exception e) {
         System.out.println("insert 오류 : " + e.getMessage());
@@ -104,20 +101,21 @@ public class MemberService {
                 if (pstmt != null) pstmt.close();
             }catch (Exception e){}
         }
-    return null;
+    return dto;
     }
 
     public int charge(int memberId, int amount) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Connection conn = null;
+        int result = 0;
         try {
             conn = DBConn.getConnection();
             String sql = "UPDATE member SET balance = balance + ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, amount);
             pstmt.setInt(2, memberId);
-            return pstmt.executeUpdate();
+            result = pstmt.executeUpdate();
         } catch (Exception e) {
             System.out.println("insert 오류 : " +  e.getMessage());
         }finally {
@@ -126,7 +124,7 @@ public class MemberService {
                 if (pstmt != null) pstmt.close();
             }catch (Exception e){}
         }
-        return 0;
+        return result;
     }
 
     public int update(MemberDto dto) {
@@ -161,10 +159,12 @@ public class MemberService {
         ResultSet rs = null;
         Connection conn = null;
         int  result = 0;
+        conn = DBConn.getConnection();
         try {
-            conn = DBConn.getConnection();
-            String sql = "DELETE FROM member WHERE id = ?";
-            pstmt = conn.prepareStatement(sql);
+            pstmt = conn.prepareStatement("delete from sales WHERE member_id = ?");
+            pstmt.setInt(1, id);
+            result = pstmt.executeUpdate();
+            pstmt = conn.prepareStatement("DELETE FROM member WHERE id = ?");
             pstmt.setInt(1, id);
             result = pstmt.executeUpdate();
         }catch (Exception e) {
